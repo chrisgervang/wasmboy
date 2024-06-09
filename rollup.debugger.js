@@ -16,6 +16,8 @@ import copy from 'rollup-plugin-copy-glob';
 import del from 'rollup-plugin-delete';
 import hash from 'rollup-plugin-hash';
 import pkg from './package.json';
+import builtins from 'rollup-plugin-node-builtins';
+import globals from 'rollup-plugin-node-globals';
 
 const fs = require('fs');
 
@@ -46,6 +48,8 @@ let plugins = [
   }),
   babel(babelPluginConfig),
   commonjs(),
+  globals(),
+  builtins(),
   json(),
   url({
     limit: 0, // Always emit file
