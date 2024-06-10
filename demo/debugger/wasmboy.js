@@ -77,6 +77,9 @@ const WasmBoyDefaultOptions = {
   },
   onLoadedAndStarted: () => {
     console.log('onLoadedAndStarted Callback Called!');
+  },
+  sendDataToFirebase: data => {
+    console.log('sendDataToFirebase Callback Called: ', data);
   }
 };
 
