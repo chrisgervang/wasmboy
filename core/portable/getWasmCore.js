@@ -6,17 +6,25 @@ import wasmModuleUrl from '../../dist/core/core.untouched.wasm';
 // Import our wasm import object
 import importObject from './importObject';
 
-const wasmBrowserInstantiate = async wasmModuleUrl => {
+const wasmBrowserInstantiate = async (wasmModuleUrl, onMemoryWrite) => {
   let response = undefined;
+
+  const _importObject = {
+    ...importObject,
+    index: {
+      ...importObject.index,
+      onMemoryWrite
+    }
+  };
 
   // Safari does not support .instantiateStreaming()
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming
   if (WebAssembly.instantiateStreaming) {
-    response = await WebAssembly.instantiateStreaming(fetch(wasmModuleUrl), importObject);
+    response = await WebAssembly.instantiateStreaming(fetch(wasmModuleUrl), _importObject);
   } else {
     const fetchAndInstantiateTask = async () => {
       const wasmArrayBuffer = await fetch(wasmModuleUrl).then(response => response.arrayBuffer());
-      return WebAssembly.instantiate(wasmArrayBuffer, importObject);
+      return WebAssembly.instantiate(wasmArrayBuffer, _importObject);
     };
     response = await fetchAndInstantiateTask();
   }
@@ -29,22 +37,29 @@ const readBase64Buffer = base64String => {
 };
 
 const wasmNodeInstantiate = async wasmModuleUrl => {
+  const _importObject = {
+    ...importObject,
+    index: {
+      ...importObject.index,
+      onMemoryWrite
+    }
+  };
   const wasmBuffer = readBase64Buffer(wasmModuleUrl);
-  return await WebAssembly.instantiate(wasmBuffer, importObject);
+  return await WebAssembly.instantiate(wasmBuffer, _importObject);
 };
 
 // Function to instantiate our wasm and respond back
-const getWasmBoyWasmCore = async isInBrowser => {
+const getWasmBoyWasmCore = async (isInBrowser, onMemoryWrite) => {
   let response = undefined;
 
   // Allow forcing the browser mode, but also check manually
   if (isInBrowser) {
-    response = await wasmBrowserInstantiate(wasmModuleUrl);
+    response = await wasmBrowserInstantiate(wasmModuleUrl, onMemoryWrite);
   } else {
     if (typeof window !== 'undefined' || typeof self !== 'undefined') {
-      response = await wasmBrowserInstantiate(wasmModuleUrl);
+      response = await wasmBrowserInstantiate(wasmModuleUrl, onMemoryWrite);
     } else {
-      response = await wasmNodeInstantiate(wasmModuleUrl);
+      response = await wasmNodeInstantiate(wasmModuleUrl, onMemoryWrite);
     }
   }
 
