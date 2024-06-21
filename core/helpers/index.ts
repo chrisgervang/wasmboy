@@ -61,6 +61,7 @@ export function checkBitOnByte(bitPosition: i32, byte: i32): boolean {
 // Declared importObject functions
 declare function consoleLog(arg0: i32, arg1: i32): void;
 declare function consoleLogTimeout(arg0: i32, arg1: i32, timeout: i32): void;
+declare function onMemoryWriteHandler(arg0: i32, arg1: i32): void;
 
 export function log(arg0: i32, arg1: i32): void {
   consoleLog(arg0, arg1);
@@ -68,4 +69,8 @@ export function log(arg0: i32, arg1: i32): void {
 
 export function logTimeout(arg0: i32, arg1: i32, timeout: i32): void {
   consoleLogTimeout(arg0, arg1, timeout);
+}
+
+export function onMemoryWrite(arg0: i32, arg1: i32): void {
+  onMemoryWriteHandler(arg0, arg1);
 }

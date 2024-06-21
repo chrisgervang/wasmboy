@@ -1,5 +1,8 @@
 // Import object for our core js wrapper
 
+import { WORKER_MESSAGE_TYPE } from '../../lib/worker/constants';
+import { getSmartWorkerMessage } from '../../lib/worker/smartworker';
+
 // Log throttling for our core
 // The same log can't be output more than once every half second
 let logRequest = {};
@@ -23,11 +26,16 @@ const log = (arg0, arg1) => {
   console.log(logString);
 };
 
+const onMemoryWriteHandler = (arg0, arg1) => {
+  postMessage(getSmartWorkerMessage({ type: WORKER_MESSAGE_TYPE.ON_MEMORY_WRITE, address: arg0, value: arg1 }));
+};
+
 // https://github.com/AssemblyScript/assemblyscript/issues/384
 const wasmImportObject = {
   index: {
     consoleLog: log,
-    consoleLogTimeout: logTimeout
+    consoleLogTimeout: logTimeout,
+    onMemoryWriteHandler
   },
   env: {
     abort: () => {

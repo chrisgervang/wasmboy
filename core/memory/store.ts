@@ -1,11 +1,12 @@
 // Store / Write memory access
 import { checkWriteTraps } from './writeTraps';
 import { getWasmBoyOffsetFromGameBoyOffset } from './memoryMap';
-import { splitHighByte, splitLowByte } from '../helpers/index';
+import { splitHighByte, splitLowByte, onMemoryWrite } from '../helpers/index';
 import { Breakpoints } from '../debug/breakpoints';
 
 export function eightBitStoreIntoGBMemory(gameboyOffset: i32, value: i32): void {
   store<u8>(getWasmBoyOffsetFromGameBoyOffset(gameboyOffset), value);
+  onMemoryWrite(gameboyOffset, value);
 }
 
 export function eightBitStoreIntoGBMemoryWithTraps(offset: i32, value: i32): void {
